@@ -11,5 +11,5 @@ RUN chmod 777 /tmp/wpress_script.sh
 
 RUN mkdir /run/php
 
-# CMD [ "/tmp/wpress_script.sh" ]
-CMD ["tail -F", "/dev/null"]
+CMD [ "/tmp/wpress_script.sh" ]
+# CMD ["tail -F", "/dev/null"]

@@ -36,7 +36,6 @@ services:
     image: my_mariadb
     volumes:
       - maria_databaseeeee:/var/lib/mysql
-    restart: always
     networks:
       - worknet
 

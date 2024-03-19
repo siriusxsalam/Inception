@@ -1,5 +1,5 @@
 #!/bin/bash
-
+sleep 10
 # Create directory for WordPress
 mkdir -p /var/www/html
 cd /var/www/html
