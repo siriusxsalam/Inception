@@ -1,15 +1,10 @@
 FROM debian:11
 
-RUN apt-get update && apt-get install -y php-fpm php-mysql && apt-get install curl -y
-RUN apt install wget
+RUN apt-get update && apt-get install php7.4-fpm php-mysql -y && apt-get install curl -y
+
 COPY ./tools/wpress_script.sh /tmp
 COPY ./conf/www.conf /etc/php/7.4/fpm/pool.d/
 
-EXPOSE 9000
+RUN chmod +x /tmp/wpress_script.sh
 
-RUN chmod 777 /tmp/wpress_script.sh
-
-RUN mkdir /run/php
-
-CMD [ "/tmp/wpress_script.sh" ]
-# CMD ["tail -F", "/dev/null"]
+CMD ["/tmp/wpress_script.sh"]

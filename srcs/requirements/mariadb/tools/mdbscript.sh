@@ -1,18 +1,43 @@
 #!/bin/bash
 
+sed -i 's/^bind-address\s*=.*/bind-address = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
+
 service mariadb start 
 
-echo "CREATE DATABASE IF NOT EXISTS my_mariadb ;" > db.sql
-echo "CREATE USER IF NOT EXISTS 'my_mariadb_user'@'%' IDENTIFIED BY 'my_password000' ;" >> db.sql
-echo "GRANT ALL PRIVILEGES ON my_mariadb.* TO 'my_mariadb_user'@'%' ;" >> db.sql
-echo "ALTER USER 'root'@'localhost' IDENTIFIED BY 'my_password000' ;" >> db.sql
-echo "FLUSH PRIVILEGES;" >> db.sql
+mariadb -uroot -e "CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_USER_PASSWORD' ;"
+mariadb -uroot -e "GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%' ;"
+mariadb -uroot -e "FLUSH PRIVILEGES;"
+mariadb -u$MYSQL_USER -p$MYSQL_USER_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE_NAME ;"
 
-mysql < db.sql
-service mariadb stop 
-#kill $(cat /var/run/mysqld/mysqld.pid)
 
-mysqld
+# kill $(cat /var/run/mysqld/mysqld.pid)
+service mariadb stop
+
+mariadbd
+# mysqladmin -u root -p"my_password000" shutdown
+
+# exec mysqld_safe --port=3306 --bind-address=0.0.0.0 --datadir='/var/lib/mysql' 
+
+# service mariadb stop 
+# kill $(cat /var/run/mysqld/mysqld.pid)
+
+# mysqld
+# #!/bin/bash
+
+# service mariadb start
+
+# sleep 5
+
+# mysql -e "CREATE DATABASE IF NOT EXISTS \`${MYSQLDB}\`;"
+# mysql -e "CREATE USER IF NOT EXISTS \`${MSQLUSER}\`@'%' IDENTIFIED BY '${MYSQLPASSWORD}';"
+# mysql -e "GRANT ALL PRIVILEGES ON ${MYSQLDB}.* TO \`${MSQLUSER}\`@'%';"
+# mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQLROOTPASSWORD}';"
+# mysql -u root -p$MYSQLROOTPASSWORD -e "FLUSH PRIVILEGES;"
+
+# mysqladmin -u root -p$MYSQLROOTPASSWORD shutdown
+
+# exec mysqld_safe --port=3306 --bind-address=0.0.0.0 --datadir='/var/lib/mysql' 
+
 
 # #!/bin/bash
 

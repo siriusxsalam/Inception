@@ -1,60 +1,65 @@
-version: '3'
+version: "3.9"
+
+volumes:
+  database:
+    name: DB
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/$USER/data/DataBase
+      o: bind
+
+  wp_volume:
+    name: WordPress
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/$USER/data/WordPress
+      o: bind
+
+networks:
+  mynetwork:
+    name: mynetwork
 
 services:
   nginx:
-    build:
-      context: requirements/nginx/
-      dockerfile: Dockerfile 
-    image: my_nginx
-    ports:
-      - "443:443"
+    container_name: nginx
+    build: ./requirements/nginx/
+    image: nginx:inception
     volumes:
-      - wordpresssssss:/var/www/html/
-    restart: always
-    networks:
-      - worknet
+      - wp_volume:/var/www/html
     depends_on:
       - wordpress
-
-  wordpress:
-    build:
-      context: requirements/wordpress/
-      dockerfile: Dockerfile
-    image: my_wordpress
-    volumes:
-      - wordpresssssss:/var/www/html
-    restart: always
+    env_file:
+      - .env
+    ports:
+      - 443:443
     networks:
-      - worknet
-    depends_on:
-      - mariadb
+      - mynetwork
+    restart: always
 
   mariadb:
-    build:
-      context: requirements/mariadb/
-      dockerfile: Dockerfile
-    image: my_mariadb
+    container_name: mariadb
+    build: ./requirements/mariadb/
+    image: mariadb:inception
     volumes:
-      - maria_databaseeeee:/var/lib/mysql
+      - database:/var/lib/mysql
+    env_file:
+      - .env
     networks:
-      - worknet
-
-volumes:
-  maria_databaseeeee:
-    name: maria_database
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /Users/hasalam/Desktop/maria_database
-  wordpresssssss:
-    name: wordpress
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /Users/hasalam/Desktop/wordpress
-
-networks:
-  worknet:
-    driver: bridge
+      - mynetwork
+    restart: always
+  
+  wordpress:
+    container_name: wordpress
+    build: ./requirements/wordpress/
+    image: wordpress:inception
+    volumes:
+      - wp_volume:/var/www/html
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+    networks:
+      - mynetwork
+    restart: always
