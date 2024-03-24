@@ -2,24 +2,21 @@ version: "3.9"
 
 volumes:
   database:
-    name: DB
     driver: local
     driver_opts:
       type: none
-      device: /home/$USER/data/DataBase
+      device: ${DB_VOLUME}
       o: bind
 
   wp_volume:
-    name: WordPress
     driver: local
     driver_opts:
       type: none
-      device: /home/$USER/data/WordPress
+      device: ${WP_VOLUME}
       o: bind
 
 networks:
   mynetwork:
-    name: mynetwork
 
 services:
   nginx:
@@ -36,7 +33,7 @@ services:
       - 443:443
     networks:
       - mynetwork
-    restart: always
+    restart: unless-stopped
 
   mariadb:
     container_name: mariadb
@@ -48,7 +45,7 @@ services:
       - .env
     networks:
       - mynetwork
-    restart: always
+    restart: unless-stopped
   
   wordpress:
     container_name: wordpress
@@ -62,4 +59,4 @@ services:
       - mariadb
     networks:
       - mynetwork
-    restart: always
+    restart: unless-stopped

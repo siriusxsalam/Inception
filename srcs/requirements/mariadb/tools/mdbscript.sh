@@ -1,18 +1,26 @@
 #!/bin/bash
 
+# Update bind-address configuration
 sed -i 's/^bind-address\s*=.*/bind-address = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
 
+# Start MariaDB service
 service mariadb start 
 
-mariadb -uroot -e "CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_USER_PASSWORD' ;"
-mariadb -uroot -e "GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%' ;"
-mariadb -uroot -e "FLUSH PRIVILEGES;"
-mariadb -u$MYSQL_USER -p$MYSQL_USER_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE_NAME ;"
+# Using a Here Document to run multiple SQL statements in one mariadb command
+mariadb -uroot <<EOF
+CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_USER_PASSWORD';
+GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%';
+FLUSH PRIVILEGES;
+CREATE DATABASE IF NOT EXISTS $DATABASE_NAME;
+EOF
 
-
-# kill $(cat /var/run/mysqld/mysqld.pid)
+# Stop MariaDB service
 service mariadb stop
 
+# Optionally, if you want to ensure MariaDB starts after this script completes, 
+# and if mariadbd is intended to run the daemon in the foreground for containerized environments, 
+# consider using it with appropriate flags or ensuring it's configured to run correctly in your environment.
+# This line might be redundant or need adjustment depending on your setup.
 mariadbd
 # mysqladmin -u root -p"my_password000" shutdown
 
