@@ -17,17 +17,17 @@ prune:
 
 
 status:
-	@echo "           ####################   containers   ####################                "	
+	@echo "        ################   containers   #################        "	
 	@docker container ls
-	@echo "           ####################     images     ####################                "	
+	@echo "        ################     images     #################        "	
 	@docker image ls
-	@echo "           ####################    volumes     ####################                "	
+	@echo "        ################    volumes     #################        "	
 	@docker volume ls
-	@echo "           ####################    networks    ####################                "	
+	@echo "        ################    networks    #################        "	
 	@docker network ls
 
 down:
-	docker-compose -f ./srcs/docker-compose.yml downmak
+	docker-compose -f ./srcs/docker-compose.yml down
 
 start:
 	docker-compose -f ./srcs/docker-compose.yml start
